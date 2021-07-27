@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.14
+FROM php:7.4-fpm-alpine
 
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
@@ -9,7 +9,7 @@ RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/comm
     gcc \
     libc-dev \
     make \
-    libressl-dev \
+#    libressl-dev \
     pcre-dev \
     zlib-dev \
     linux-headers \
@@ -36,8 +36,6 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     imap-dev \
     openssl-dev \
     git \
-    python \
-    python-dev \
     py-pip \
     augeas-dev \
     libressl-dev \
@@ -65,12 +63,11 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     gifsicle \
     tzdata && \
     docker-php-ext-configure gd \
-      --with-gd \
-      --with-freetype-dir=/usr/include/ \
-      --with-png-dir=/usr/include/ \
-      --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-install pdo_mysql bcmath pgsql pdo_pgsql mysqli gd exif intl xsl soap zip opcache && \
-    pecl install xdebug-2.7.2 && \
+      --with-freetype \
+      --with-jpeg&& \
+#    docker-php-ext-configure pgsql --with-pgsql && \
+#    docker-php-ext-install opcache && \
+    pecl install xdebug && \
     pecl install -o -f redis && \
     echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini && \
     docker-php-ext-enable xdebug && \
@@ -79,7 +76,7 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --quiet --install-dir=/usr/bin --filename=composer && \
     rm composer-setup.php && \
-    apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev make autoconf && \
+    apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf && \
     cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
     echo "Europe/Moscow" > /etc/timezone && \
     apk del tzdata
